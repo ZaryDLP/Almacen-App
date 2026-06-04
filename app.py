@@ -4,7 +4,15 @@ import os
 
 app = Flask(__name__)
 
-df = pd.read_excel("Insumos.xlsx")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+archivo_excel = os.path.join(BASE_DIR, "Insumos.xlsx")
+
+df = pd.read_excel(archivo_excel)
+df.columns = df.columns.str.strip()
+
+print("COLUMNAS:")
+print(df.columns.tolist())
 
 @app.route("/")
 def index():
