@@ -1,0 +1,8 @@
+import pandas as pd
+
+df = pd.read_excel("Insumos.xlsx")
+
+# Elimina espacios al inicio y al final de los encabezados
+df.columns = df.columns.str.strip()
+
+print(df.columns)

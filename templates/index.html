@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Contador de Insumos</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <style>
+
+        body{
+            margin:0;
+            font-family: Arial;
+            background:#f3f4f6;
+        }
+
+        .box{
+            max-width:600px;
+            margin:auto;
+            padding:15px;
+        }
+
+        h2{
+            text-align:center;
+        }
+
+        input{
+            width:100%;
+            padding:14px;
+            font-size:18px;
+            margin-top:8px;
+            margin-bottom:10px;
+            border-radius:8px;
+            border:1px solid #ccc;
+        }
+
+        .item{
+            padding:14px;
+            font-size:16px;
+            border-bottom:1px solid #ddd;
+            cursor:pointer;
+            background:white;
+        }
+
+        .item:hover{
+            background:#eee;
+        }
+
+        .hidden{
+            display:none;
+        }
+
+        button{
+            width:100%;
+            padding:14px;
+            font-size:18px;
+            background:#16a34a;
+            color:white;
+            border:none;
+            border-radius:8px;
+        }
+
+        .resultado{
+            margin-top:15px;
+            font-size:20px;
+            font-weight:bold;
+            text-align:center;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+    <h2>📦 Contador de Insumos</h2>
+
+    <input type="text" id="buscar" placeholder="Escribe producto..." autocomplete="off">
+
+    <div id="lista"></div>
+
+    <div id="seleccion" class="hidden">
+
+        <p><b>Producto:</b> <span id="nombre"></span></p>
+        <p><b>Peso unitario:</b> <span id="peso"></span></p>
+
+        <input type="number" id="bruto" placeholder="Peso bruto en gr">
+        <input type="number" id="tara" placeholder="Tara en gr">
+
+        <button onclick="calcular()">Calcular</button>
+
+        <div class="resultado" id="res"></div>
+
+    </div>
+
+</div>
+
+<script>
+
+let productoSeleccionado = null;
+
+document.getElementById("buscar").addEventListener("input", async function(){
+
+    let q = this.value;
+
+    if(q.length < 1){
+        document.getElementById("lista").innerHTML = "";
+        return;
+    }
+
+    let res = await fetch("/buscar?q=" + q);
+    let data = await res.json();
+
+    let html = "";
+
+    data.forEach(p => {
+        html += `
+        <div class="item" onclick='seleccionar("${p["ESPECIFICACIÓN"]}", ${p["PESO UNITARIO"]})'>
+            ${p["ESPECIFICACIÓN"]} - ${p["PESO UNITARIO"]}
+        </div>
+        `;
+    });
+
+    document.getElementById("lista").innerHTML = html;
+
+});
+
+function seleccionar(nombre, peso){
+
+    productoSeleccionado = {nombre, peso};
+
+    document.getElementById("nombre").innerText = nombre;
+    document.getElementById("peso").innerText = peso;
+
+    document.getElementById("seleccion").classList.remove("hidden");
+
+    document.getElementById("lista").innerHTML = "";
+    document.getElementById("buscar").value = "";
+}
+
+function calcular(){
+
+    let bruto = parseFloat(document.getElementById("bruto").value);
+    let tara = parseFloat(document.getElementById("tara").value);
+
+    let neto = bruto - tara;
+    let unidades = Math.round(neto / productoSeleccionado.peso);
+
+    document.getElementById("res").innerText =
+        "Unidades: " + unidades;
+
+}
+
+</script>
+
+</body>
+</html>
