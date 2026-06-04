@@ -1,8 +1,8 @@
 import pandas as pd
 
 # Leer el archivo Excel
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-df = pd.read_excel(os.path.join(BASE_DIR, "Insumos.xlsx"))
+df = pd.read_excel(archivo)
 
-# Mostrar todo el contenido
-print(df)
+df.columns = df.columns.str.strip()
+
+print(df.columns.tolist())
